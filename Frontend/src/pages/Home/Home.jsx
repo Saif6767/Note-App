@@ -4,7 +4,7 @@ import NoteCard from '../../components/Cards/NoteCard'
 import { MdAdd } from 'react-icons/md'
 import AddEditNotes from './AddEditNotes'
 import Modal from 'react-modal'
-import { data, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../utils/axiosinstance.js'
 import Toast from '../../components/ToastMessage/Toast.jsx'
 import EmptyCard from '../../components/EmptyCard/EmptyCard.jsx'
@@ -134,51 +134,63 @@ const Home = () => {
   useEffect(() => {
     getAllNotes()
     getUserInfo();
-    return () => { };
   }, [])
 
   return (
     <>
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
 
-      <div className='container mx-auto'>
-        {allNotes.length > 0 ? (<div className='grid grid-cols-3 gap-4 mt-8'>
-          {allNotes.map((item, index) => (
-            <NoteCard
-              key={item._id}
-              title={item.title}
-              date={item.createdOn}
-              content={item.content}
-              tags={item.tags}
-              isPinned={item.isPinned}
-              onEdit={() => handleEdit(item)}
-              onDelet={() => deleteNote(item)}
-              onPinNote={() => updataeIsPinned(item)}
-            />
-          ))}
-        </div>) : (<EmptyCard imgSrc={isSearch ? NoDataImg : AddNotesImg}
-          message={isSearch ? `Oops! No notes founds matching your search.` : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`} />)}
+      <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+        {allNotes.length > 0 ? (
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8'>
+            {allNotes.map((item) => (
+              <NoteCard
+                key={item._id}
+                title={item.title}
+                date={item.createdOn}
+                content={item.content}
+                tags={item.tags}
+                isPinned={item.isPinned}
+                onEdit={() => handleEdit(item)}
+                onDelet={() => deleteNote(item)}
+                onPinNote={() => updataeIsPinned(item)}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyCard
+            imgSrc={isSearch ? NoDataImg : AddNotesImg}
+            message={
+              isSearch
+                ? `Oops! No notes found matching your search.`
+                : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`
+            }
+          />
+        )}
       </div>
 
-      <button className='w-16 h-16 flex items-center justify-center cursor-pointer rounded-2xl bg-blue-500 hover:bg-blue-700 absolute right-10 bottom-10'
+      <button
+        className='w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center cursor-pointer rounded-2xl bg-blue-500 hover:bg-blue-700 fixed right-4 sm:right-10 bottom-4 sm:bottom-10 shadow-lg transition-colors duration-300'
         onClick={() => {
           setOpenAddEditModal({ isShown: true, type: "add", data: null })
-        }}>
-        <MdAdd className='text-[32px] text-white' />
+        }}
+        aria-label="Add new note"
+      >
+        <MdAdd className='text-3xl sm:text-4xl text-white' />
       </button>
 
       <Modal
         isOpen={openAddEditModal.isShown}
-        onRequestClose={() => { }}
+        onRequestClose={() => setOpenAddEditModal({ isShown: false, type: "add", data: null })}
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.2)",
+            zIndex: 1000,
           },
         }}
-        contentLabel=""
-        className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-hidden"
+        contentLabel="Add or Edit Note Modal"
+        className="w-full max-w-lg mx-auto mt-10 rounded-md bg-white p-5 overflow-auto max-h-[75vh] focus:outline-none"
       >
-
         <AddEditNotes
           type={openAddEditModal.type}
           noteData={openAddEditModal.data}

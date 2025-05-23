@@ -10,6 +10,7 @@ const User = require("./models/user.model.js");
 const Note = require("./models/note.model.js")
 
 const express = require("express");
+const bcrypt = require('bcrypt');
 const cors = require("cors");
 const app = express();
 
@@ -62,10 +63,12 @@ app.post('/create-account', async (req, res) => {
         })
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = new User({
         fullName,
         email,
-        password,
+        password:hashedPassword,
     })
 
     await user.save();
@@ -87,38 +90,36 @@ app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email) {
-        return res.status(400).json({ message: "Email is requried" });
+        return res.status(400).json({ message: "Email is required" });
     }
 
     if (!password) {
-        return res.status(400).json({ message: "Password is requried" });
+        return res.status(400).json({ message: "Password is required" });
     }
 
     const userInfo = await User.findOne({ email: email });
 
     if (!userInfo) {
-        return res.status(400).json({ message: "User not found" })
+        return res.status(400).json({ message: "User not found" });
     }
 
-    if (userInfo.email == email && userInfo.password == password) {
-        const user = { user: userInfo };
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: "36000m",
-        });
+    const isPasswordValid = await bcrypt.compare(password, userInfo.password); // ✅
 
-        return res.json({
-            error: false,
-            message: "Login Successful",
-            email,
-            accessToken,
-        });
+    if (!isPasswordValid) {
+        return res.status(400).json({ message: "Invalid Credentials" }); // ✅
     }
-    else {
-        return res.status(400).json({
-            error: true,
-            message: "Invalid Credentials",
-        });
-    }
+
+    const user = { user: userInfo };
+    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "36000m",
+    });
+
+    return res.json({
+        error: false,
+        message: "Login Successful",
+        email,
+        accessToken,
+    });
 });
 
 // Get User

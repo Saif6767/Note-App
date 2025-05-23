@@ -34,7 +34,6 @@ const Signup = () => {
 
     setError('')
 
-    //Signup API Call
     try {
       const response= await axiosInstance.post("/create-account", {
         fullName: name,
@@ -63,23 +62,23 @@ const Signup = () => {
     <>
       <Navbar />
 
-      <div className='flex items-center justify-center mt-28'>
-        <div className='w-96 border rounded bg-white px-7 py-10'>
+      <div className="flex items-center justify-center mt-20 px-4">
+        <div className="w-full max-w-md border rounded bg-white px-6 sm:px-8 py-10 shadow-md">
           <form onSubmit={handleSignup}>
-            <h4 className='text-2xl mb-7'>SignUp</h4>
+            <h4 className="text-2xl mb-7 font-semibold text-center">SignUp</h4>
 
             <input
-              type='text'
-              placeholder='Name'
-              className='input-box'
+              type="text"
+              placeholder="Name"
+              className="input-box w-full mb-4"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
 
             <input
-              type='text'
-              placeholder='Email'
-              className='input-box'
+              type="text"
+              placeholder="Email"
+              className="input-box w-full mb-4"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -89,12 +88,18 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+            {error && <p className="text-red-500 text-xs pb-2">{error}</p>}
 
-            <button type='submit' className='btn rounded w-full p-2 bg-blue-600 text-white cursor-pointer'>Create Account</button>
-            <p className='text-sm text-center mt-4'>
-              Already have an account?{""}
-              <Link to="/" className=' font-medium underline text-blue-500'>
+            <button
+              type="submit"
+              className="btn w-full mt-2 rounded p-2 bg-blue-600 hover:bg-blue-700 text-white transition duration-300"
+            >
+              Create Account
+            </button>
+
+            <p className="text-sm text-center mt-4">
+              Already have an account?{" "}
+              <Link to="/" className="font-medium underline text-blue-500">
                 Login
               </Link>
             </p>
