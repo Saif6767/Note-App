@@ -21,11 +21,21 @@ const { authenticateToken } = require("./utilities")
 
 
 
-app.use(
-    cors({
-        origin: "*",
-    })
-);
+const allowedOrigins = [
+  'https://note-app-02.netlify.app',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed for this origin"));
+    }
+  },
+  credentials: true, // if you're using cookies or JWT in headers
+}));
+
 
 app.get("/", (req, res) => {
     res.json({ data: "hello" });
